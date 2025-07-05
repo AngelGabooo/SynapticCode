@@ -4,10 +4,11 @@ const TestimonialsSection = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
   const [isVisible, setIsVisible] = useState({});
   const [counters, setCounters] = useState({ rating: 0, clients: 0, projects: 0 });
-  const [hasCounterStarted, setHasCounterStarted] = useState(false);
+  const hasCounterStartedRef = useRef(false);
   const sectionRef = useRef(null);
   const statsRef = useRef(null);
   const titleRef = useRef(null);
+  const intervalRefs = useRef({});
 
   // Hook para detectar elementos visibles
   useEffect(() => {
@@ -29,14 +30,22 @@ const TestimonialsSection = () => {
     const statsObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && !hasCounterStarted) {
-            setHasCounterStarted(true);
+          if (entry.isIntersecting && !hasCounterStartedRef.current) {
+            hasCounterStartedRef.current = true;
             // Animar contador de rating
             animateCounter(4.9, 'rating', 2000);
             // Animar contador de clientes
             animateCounter(100, 'clients', 2500);
             // Animar contador de proyectos
             animateCounter(150, 'projects', 3000);
+          }
+          // Cuando sale de vista, resetea los contadores y el flag
+          if (!entry.isIntersecting && hasCounterStartedRef.current) {
+            hasCounterStartedRef.current = false;
+            setCounters({ rating: 0, clients: 0, projects: 0 });
+            // Limpiar todos los intervalos
+            Object.values(intervalRefs.current).forEach(id => clearInterval(id));
+            intervalRefs.current = {};
           }
         });
       },
@@ -54,8 +63,11 @@ const TestimonialsSection = () => {
     return () => {
       observer.disconnect();
       statsObserver.disconnect();
+      // Limpiar intervalos al desmontar
+      Object.values(intervalRefs.current).forEach(id => clearInterval(id));
+      intervalRefs.current = {};
     };
-  }, [hasCounterStarted]);
+  }, []);
 
   // Función para animar contadores
   const animateCounter = (target, key, duration) => {
@@ -63,11 +75,17 @@ const TestimonialsSection = () => {
     const increment = target / (duration / 16); // 60fps
     let current = start;
 
-    const timer = setInterval(() => {
+    // Limpiar cualquier intervalo anterior para esta key
+    if (intervalRefs.current[key]) {
+      clearInterval(intervalRefs.current[key]);
+    }
+
+    intervalRefs.current[key] = setInterval(() => {
       current += increment;
       if (current >= target) {
         current = target;
-        clearInterval(timer);
+        clearInterval(intervalRefs.current[key]);
+        intervalRefs.current[key] = null;
       }
       setCounters(prev => ({
         ...prev,

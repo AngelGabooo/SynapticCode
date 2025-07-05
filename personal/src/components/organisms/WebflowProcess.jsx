@@ -41,21 +41,21 @@ const WebflowProcess = () => {
 
   useEffect(() => {
     const animateElements = () => {
-      // Animate title
+      // Animar título
       if (titleRef.current) {
         titleRef.current.style.transition = 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
         titleRef.current.style.opacity = '1';
         titleRef.current.style.transform = 'translateY(0)';
       }
 
-      // Animate subtitle
+      // Animar subtítulo
       if (subtitleRef.current) {
         subtitleRef.current.style.transition = 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s';
         subtitleRef.current.style.opacity = '1';
         subtitleRef.current.style.transform = 'translateY(0)';
       }
       
-      // Animate steps one by one
+      // Animar steps uno por uno
       stepsRef.current.forEach((step, index) => {
         if (step) {
           step.style.transition = `all 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.5 + index * 0.15}s`;
@@ -65,11 +65,30 @@ const WebflowProcess = () => {
       });
     };
 
+    const resetElements = () => {
+      if (titleRef.current) {
+        titleRef.current.style.opacity = '0';
+        titleRef.current.style.transform = 'translateY(40px)';
+      }
+      if (subtitleRef.current) {
+        subtitleRef.current.style.opacity = '0';
+        subtitleRef.current.style.transform = 'translateY(40px)';
+      }
+      stepsRef.current.forEach((step) => {
+        if (step) {
+          step.style.opacity = '0';
+          step.style.transform = 'translateY(40px) scale(0.95)';
+        }
+      });
+    };
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             animateElements();
+          } else {
+            resetElements();
           }
         });
       },

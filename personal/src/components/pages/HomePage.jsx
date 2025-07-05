@@ -8,6 +8,9 @@ import WebflowProcess from '../organisms/WebflowProcess';
 import SplashCursor from '../atoms/SplashCursor';
 import Aurora from '../organisms/Aurora'; // Asegúrate de tener este componente
 import TestimonialsSection from '../organisms/TestimonialsSection'; // Nuevo componente
+import ProfessionalProfile from '../organisms/ProfessionalProfile';
+import SubscriptionPlans from '../organisms/SubscriptionPlans';
+import ModernFooter from '../organisms/ModernFooter';
 
 const HomePage = () => {
   const [activeNavItem, setActiveNavItem] = useState(0);
@@ -39,7 +42,10 @@ const HomePage = () => {
           <ProjectLifeSection />
           <WebflowProcess />
           <TestimonialsSection /> {/* Nuevo componente de testimonios */}
-          {/* Más secciones pueden ir aquí */}
+          <ProfessionalProfile /> {/* Perfil profesional */}
+          {/* Aquí puedes agregar más secciones según sea necesario */}
+          <SubscriptionPlans /> {/* Sección de planes de suscripción */}
+          <ModernFooter /> {/* Pie de página moderno */}
         </main>
       </div>
     </>
