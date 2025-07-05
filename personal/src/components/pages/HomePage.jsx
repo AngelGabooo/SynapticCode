@@ -7,6 +7,7 @@ import ProjectLifeSection from '../molecules/ProjectLifeSection';
 import WebflowProcess from '../organisms/WebflowProcess';
 import SplashCursor from '../atoms/SplashCursor';
 import Aurora from '../organisms/Aurora'; // Asegúrate de tener este componente
+import TestimonialsSection from '../organisms/TestimonialsSection'; // Nuevo componente
 
 const HomePage = () => {
   const [activeNavItem, setActiveNavItem] = useState(0);
@@ -37,6 +38,7 @@ const HomePage = () => {
           <PortfolioShowcase />
           <ProjectLifeSection />
           <WebflowProcess />
+          <TestimonialsSection /> {/* Nuevo componente de testimonios */}
           {/* Más secciones pueden ir aquí */}
         </main>
       </div>
