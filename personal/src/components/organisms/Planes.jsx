@@ -1,9 +1,11 @@
-import { useState, useRef } from 'react';
+import React, { useState } from 'react';
+import Header from './Header'; // Asegúrate de que la ruta sea correcta
 
-const PremiumSubscriptionPlans = () => {
+const Planes = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [isAnnual, setIsAnnual] = useState(false);
   const [activeFaq, setActiveFaq] = useState(null);
+  const [activeNavItem, setActiveNavItem] = useState(3); // Para resaltar "Planes" en el header
 
   const plans = [
     {
@@ -77,6 +79,9 @@ const PremiumSubscriptionPlans = () => {
 
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
+      {/* Header */}
+      <Header activeIndex={activeNavItem} setActiveIndex={setActiveNavItem} />
+      
       {/* Efectos de fondo animados */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-0 w-full h-full">
@@ -103,7 +108,8 @@ const PremiumSubscriptionPlans = () => {
         </div>
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      {/* Contenido principal con padding para el header */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
         {/* Encabezado Hero */}
         <div className="text-center mb-20">
           <div className="inline-flex items-center justify-center px-4 py-2 mb-6 text-sm font-medium text-purple-400 bg-purple-900/20 rounded-full border border-purple-500/30 backdrop-blur-sm">
@@ -368,4 +374,4 @@ const PremiumSubscriptionPlans = () => {
   );
 };
 
-export default PremiumSubscriptionPlans;
+export default Planes;

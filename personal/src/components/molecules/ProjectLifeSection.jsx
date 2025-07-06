@@ -1,21 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { FaGlobe } from 'react-icons/fa';
+
+// Idiomas disponibles
+const languages = ['es', 'en', 'ar', 'it'];
 
 const ProjectLifeSection = () => {
   const [currentLanguage, setCurrentLanguage] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
+  const dropdownRef = useRef(null);
   const sectionRef = useRef(null);
-  const contentRef = useRef(null);
-  const scrollTimeoutRef = useRef(null);
-  const lastScrollTime = useRef(0);
-  
-  // Idiomas disponibles
-  const languages = ['es', 'en', 'ar', 'it'];
+  const elementsRef = useRef([]);
   const isRTL = languages[currentLanguage] === 'ar';
-  
+
   // Contenido en 4 idiomas
   const content = {
     es: {
       title: "Doy vida a tus proyectos",
+      language: "ES",
       services: [
         {
           title: "Desarrollo Webflow White Label",
@@ -33,11 +35,11 @@ const ProjectLifeSection = () => {
       cta: {
         title: "Estás a 5 pasos de tener un nuevo sitio web...",
         description: "Amplía sin problemas las capacidades de tu agencia con desarrollo Webflow experto."
-      },
-      scrollHint: "Desplázate para continuar"
+      }
     },
     en: {
       title: "I bring projects to life",
+      language: "EN",
       services: [
         {
           title: "White Label Webflow Development",
@@ -55,11 +57,11 @@ const ProjectLifeSection = () => {
       cta: {
         title: "You're 5 steps away from a new website...",
         description: "Seamlessly extend your agency's capabilities with expert Webflow development."
-      },
-      scrollHint: "Scroll to continue"
+      }
     },
     ar: {
       title: "أحقق المشاريع",
+      language: "AR",
       services: [
         {
           title: "تطوير ويبفلوو بالعلامة البيضاء",
@@ -77,11 +79,11 @@ const ProjectLifeSection = () => {
       cta: {
         title: "أنت على بعد 5 خطوات من موقع ويب جديد...",
         description: "وسع قدرات وكالتك بسلاسة مع تطوير ويبفلوو احترافي."
-      },
-      scrollHint: "قم بالتمرير للمتابعة"
+      }
     },
     it: {
       title: "Do vita ai progetti",
+      language: "IT",
       services: [
         {
           title: "Sviluppo Webflow White Label",
@@ -99,94 +101,65 @@ const ProjectLifeSection = () => {
       cta: {
         title: "Sei a 5 passi da un nuovo sito web...",
         description: "Estendi senza problemi le capacità della tua agenzia con lo sviluppo Webflow esperto."
-      },
-      scrollHint: "Scorri per continuare"
+      }
     }
   };
 
-  // Función para cambiar idioma con animación suave
-  const changeLanguage = () => {
-    if (isTransitioning || currentLanguage >= languages.length - 1) return;
-    
-    setIsTransitioning(true);
-    
-    // Después de la animación, cambiar el idioma
-    setTimeout(() => {
-      setCurrentLanguage(prev => prev + 1);
-      setIsTransitioning(false);
-    }, 300);
-  };
-
-  // Mejorado manejo del scroll con throttling
+  // Efecto para manejar clics fuera del dropdown
   useEffect(() => {
-    const section = sectionRef.current;
-    
-    const handleScroll = (e) => {
-      const currentTime = Date.now();
-      
-      // Throttle scroll events
-      if (currentTime - lastScrollTime.current < 100) {
-        return;
-      }
-      
-      const sectionRect = section.getBoundingClientRect();
-      const isSectionInView = (
-        sectionRect.top <= window.innerHeight / 2 && 
-        sectionRect.bottom >= window.innerHeight / 2
-      );
-      
-      if (!isSectionInView || isTransitioning) return;
-      
-      const isScrollingDown = e.deltaY > 0;
-      if (!isScrollingDown) return;
-      
-      e.preventDefault();
-      lastScrollTime.current = currentTime;
-      
-      // Clear existing timeout
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-      
-      // Debounce scroll to prevent rapid changes
-      scrollTimeoutRef.current = setTimeout(() => {
-        changeLanguage();
-      }, 50);
-    };
-
-    const handleTouchMove = (e) => {
-      // Similar logic for touch events
-      if (isTransitioning) {
-        e.preventDefault();
-        return;
-      }
-      
-      const sectionRect = section.getBoundingClientRect();
-      const isSectionInView = (
-        sectionRect.top <= window.innerHeight / 2 && 
-        sectionRect.bottom >= window.innerHeight / 2
-      );
-      
-      if (!isSectionInView) return;
-      
-      // Simple touch handling for now
-      const touch = e.touches[0];
-      if (touch && touch.clientY < window.innerHeight / 2) {
-        changeLanguage();
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowLanguageDropdown(false);
       }
     };
-
-    window.addEventListener('wheel', handleScroll, { passive: false });
-    window.addEventListener('touchmove', handleTouchMove, { passive: false });
-    
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      window.removeEventListener('wheel', handleScroll);
-      window.removeEventListener('touchmove', handleTouchMove);
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
+      document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [currentLanguage, isTransitioning]);
+  }, []);
+
+  // Efecto para animación al hacer scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('opacity-100', 'translate-y-0');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    elementsRef.current.forEach((el) => {
+      if (el) observer.observe(el);
+    });
+
+    return () => {
+      elementsRef.current.forEach((el) => {
+        if (el) observer.unobserve(el);
+      });
+    };
+  }, [currentLanguage]);
+
+  // Configuración de opciones de idioma
+  const languageOptions = [
+    { value: 'es', label: '🇪🇸 Español', dir: 'ltr' },
+    { value: 'en', label: '🇬🇧 English', dir: 'ltr' },
+    { value: 'it', label: '🇮🇹 Italiano', dir: 'ltr' },
+    { value: 'ar', label: '🇸🇦 العربية', dir: 'rtl' }
+  ];
+
+  // Función para cambiar el idioma
+  const changeLanguage = (langValue) => {
+    const index = languages.indexOf(langValue);
+    if (index !== -1) {
+      setCurrentLanguage(index);
+      setShowLanguageDropdown(false);
+      document.documentElement.dir = langValue === 'ar' ? 'rtl' : 'ltr';
+    }
+  };
 
   const renderServiceIcon = (index) => {
     switch(index) {
@@ -239,22 +212,53 @@ const ProjectLifeSection = () => {
   return (
     <section 
       ref={sectionRef}
-      className="py-20 px-4 max-w-6xl mx-auto text-center bg-black text-white min-h-screen flex flex-col justify-center relative overflow-hidden"
+      className={`relative min-h-screen flex flex-col items-center justify-center px-4 py-20 overflow-hidden ${isRTL ? 'text-right' : 'text-left'}`}
       dir={isRTL ? 'rtl' : 'ltr'}
     >
       {/* Fondo animado sutil */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-950/20 via-purple-950/20 to-black opacity-50"></div>
       
-      <div 
-        ref={contentRef} 
-        className={`relative z-10 transition-all duration-500 ease-out ${
-          isTransitioning 
-            ? 'opacity-0 transform translate-y-8 scale-95' 
-            : 'opacity-100 transform translate-y-0 scale-100'
-        }`}
-      >
+      {/* Barra superior con botón de idioma */}
+      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-50">
+        <div className="relative" ref={dropdownRef}>
+          <motion.button
+            className="flex items-center justify-center gap-2 text-white font-medium px-4 py-2 rounded-full hover:bg-white/10 transition-colors duration-300 text-sm border border-white/20"
+            onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <FaGlobe className="text-base" />
+            <span>{content[languages[currentLanguage]].language}</span>
+          </motion.button>
+          
+          {showLanguageDropdown && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="absolute right-0 mt-2 w-48 bg-black/90 backdrop-blur-sm rounded-lg shadow-lg border border-white/10 overflow-hidden"
+            >
+              {languageOptions.map((option) => (
+                <button
+                  key={option.value}
+                  className={`w-full text-center px-4 py-2 hover:bg-white/10 transition-colors flex items-center justify-center ${languages[currentLanguage] === option.value ? 'bg-white/20' : ''}`}
+                  onClick={() => changeLanguage(option.value)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </div>
+      </div>
+
+      {/* Contenido principal */}
+      <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col items-center">
         {/* Título principal */}
-        <div className="mb-20">
+        <div 
+          ref={el => elementsRef.current[0] = el}
+          className="mb-20 opacity-0 translate-y-10 transition-all duration-700 w-full text-center"
+        >
           <h2 className="text-4xl md:text-6xl font-bold mb-6 text-white leading-tight">
             {content[languages[currentLanguage]].title}
           </h2>
@@ -262,13 +266,14 @@ const ProjectLifeSection = () => {
         </div>
         
         {/* Tarjetas de servicios */}
-        <div className="grid md:grid-cols-3 gap-8 mb-20 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 mb-20 w-full max-w-5xl mx-auto">
           {content[languages[currentLanguage]].services.map((service, index) => (
             <div 
-              key={index} 
-              className="group text-center p-6 rounded-2xl bg-gray-900/50 backdrop-blur-sm border border-gray-800/50 hover:border-blue-500/50 transition-all duration-500 hover:transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-500/10"
+              key={index}
+              ref={el => elementsRef.current[index + 1] = el}
+              className="group text-center p-6 rounded-2xl bg-gray-900/50 backdrop-blur-sm border border-gray-800/50 hover:border-blue-500/50 transition-all duration-500 hover:transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-500/10 opacity-0 translate-y-10 transition-all duration-700 flex flex-col items-center"
               style={{
-                animationDelay: `${index * 100}ms`
+                transitionDelay: `${index * 100}ms`
               }}
             >
               <div className="flex justify-center mb-6">
@@ -285,49 +290,17 @@ const ProjectLifeSection = () => {
         </div>
         
         {/* Sección final con CTA */}
-        <div className="pt-16">
+        <div 
+          ref={el => elementsRef.current[4] = el}
+          className="pt-16 opacity-0 translate-y-10 transition-all duration-700 w-full text-center"
+          style={{ transitionDelay: '300ms' }}
+        >
           <h3 className="text-3xl md:text-4xl font-bold mb-6 text-white leading-tight">
             {content[languages[currentLanguage]].cta.title}
           </h3>
           <p className="text-gray-400 mb-12 max-w-2xl mx-auto text-lg leading-relaxed">
             {content[languages[currentLanguage]].cta.description}
           </p>
-          
-          {/* Indicador de scroll mejorado */}
-          {currentLanguage < languages.length - 1 && (
-            <div className="mt-12 flex flex-col items-center space-y-4">
-              <div className="flex space-x-2 mb-2">
-                {languages.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      index === currentLanguage
-                        ? 'bg-blue-500 w-8'
-                        : 'bg-gray-600'
-                    }`}
-                  />
-                ))}
-              </div>
-              <p className="text-gray-400 text-sm">
-                {content[languages[currentLanguage]].scrollHint}
-              </p>
-              <div className="animate-bounce">
-                <svg 
-                  className="w-6 h-6 text-blue-400 animate-pulse"
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2} 
-                    d="M19 14l-7 7m0 0l-7-7m7 7V3" 
-                  />
-                </svg>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </section>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import Header from '../organisms/Header';
 import HeroSection from '../organisms/HeroSection';
 import PartnersSection from '../organisms/PartnersSection';
@@ -11,6 +12,8 @@ import TestimonialsSection from '../organisms/TestimonialsSection'; // Nuevo com
 import ProfessionalProfile from '../organisms/ProfessionalProfile';
 import SubscriptionPlans from '../organisms/SubscriptionPlans';
 import ModernFooter from '../organisms/ModernFooter';
+import Planes from '../organisms/Planes';
+import WebImpactPage from '../organisms/WebImpactPage';
 
 const HomePage = () => {
   const [activeNavItem, setActiveNavItem] = useState(0);
@@ -45,6 +48,9 @@ const HomePage = () => {
           <ProfessionalProfile /> {/* Perfil profesional */}
           {/* Aquí puedes agregar más secciones según sea necesario */}
           <SubscriptionPlans /> {/* Sección de planes de suscripción */}
+          <WebImpactPage /> {/* Página de impacto web */}
+          
+          {/* Pie de página moderno */}
           <ModernFooter /> {/* Pie de página moderno */}
         </main>
       </div>
