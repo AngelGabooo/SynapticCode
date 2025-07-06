@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react/no-unknown-property */
-import React, { useState, useRef, useEffect, useMemo, Suspense } from 'react';import {
+import React, { useState, useRef, useEffect, useMemo, Suspense } from 'react';
+import {
   ScatterChart,
   Scatter,
   XAxis,
@@ -58,7 +59,7 @@ const ReactLogo = () => {
   );
 };
 
-// Componente ModelViewer
+// Componente ModelViewer mejorado
 const isTouch =
   typeof window !== 'undefined' &&
   ('ontouchstart' in window || navigator.maxTouchPoints > 0);
@@ -76,23 +77,26 @@ const Loader = ({ placeholderSrc }) => {
   if (!active && placeholderSrc) return null;
   return (
     <Html center>
-      {placeholderSrc ? (
-        <img
-          src={placeholderSrc}
-          width={128}
-          height={128}
-          style={{ filter: 'blur(8px)', borderRadius: 8 }}
-        />
-      ) : (
-        `${Math.round(progress)} %`
-      )}
+      <div className="flex flex-col items-center">
+        <div className="w-16 h-16 border-4 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-4 text-gray-400">Cargando modelo {Math.round(progress)}%</p>
+      </div>
     </Html>
   );
 };
 
 const DesktopControls = ({ pivot, min, max, zoomEnabled }) => {
   const ref = useRef(null);
-  useFrame(() => ref.current?.target.copy(pivot));
+  const { camera } = useThree();
+  
+  useFrame(() => {
+    if (ref.current) {
+      ref.current.target.copy(pivot);
+      camera.position.lerp(ref.current.object.position, 0.1);
+      camera.quaternion.slerp(ref.current.object.quaternion, 0.1);
+    }
+  });
+
   return (
     <OrbitControls
       ref={ref}
@@ -102,6 +106,10 @@ const DesktopControls = ({ pivot, min, max, zoomEnabled }) => {
       enableZoom={zoomEnabled}
       minDistance={min}
       maxDistance={max}
+      dampingFactor={0.05}
+      autoRotateSpeed={0.5}
+      rotateSpeed={0.5}
+      zoomSpeed={0.8}
     />
   );
 };
@@ -346,51 +354,58 @@ const ModelInner = ({
     return () => window.removeEventListener('pointermove', mm);
   }, [enableMouseParallax, enableHoverRotation]);
 
-useFrame((_, dt) => {
-  let need = false;
-  cPar.current.x += (tPar.current.x - cPar.current.x) * PARALLAX_EASE;
-  cPar.current.y += (tPar.current.y - cPar.current.y) * PARALLAX_EASE;
-  const phx = cHov.current.x,
-    phy = cHov.current.y;
-  cHov.current.x += (tHov.current.x - cHov.current.x) * HOVER_EASE;
-  cHov.current.y += (tHov.current.y - cHov.current.y) * HOVER_EASE;
+  useFrame((_, dt) => {
+    let need = false;
+    cPar.current.x = THREE.MathUtils.lerp(cPar.current.x, tPar.current.x, PARALLAX_EASE);
+    cPar.current.y = THREE.MathUtils.lerp(cPar.current.y, tPar.current.y, PARALLAX_EASE);
+    const phx = cHov.current.x, phy = cHov.current.y;
+    cHov.current.x = THREE.MathUtils.lerp(cHov.current.x, tHov.current.x, HOVER_EASE);
+    cHov.current.y = THREE.MathUtils.lerp(cHov.current.y, tHov.current.y, HOVER_EASE);
 
-  const ndc = pivotW.current.clone().project(camera);
-  ndc.x += xOff + cPar.current.x; // Corrección: eliminada la palabra 'fale'
-  ndc.y += yOff + cPar.current.y;
-  outer.current.position.copy(ndc.unproject(camera));
+    const ndc = pivotW.current.clone().project(camera);
+    ndc.x += xOff + cPar.current.x;
+    ndc.y += yOff + cPar.current.y;
+    
+    const worldPos = ndc.unproject(camera);
+    outer.current.position.lerp(worldPos, 0.1);
 
-  outer.current.rotation.x += cHov.current.x - phx;
-  outer.current.rotation.y += cHov.current.y - phy;
+    outer.current.rotation.x += (cHov.current.x - phx) * 0.1;
+    outer.current.rotation.y += (cHov.current.y - phy) * 0.1;
 
-  if (autoRotate) {
-    outer.current.rotation.y += autoRotateSpeed * dt;
-    need = true;
-  }
+    if (autoRotate) {
+      outer.current.rotation.y += autoRotateSpeed * dt;
+      need = true;
+    }
 
-  outer.current.rotation.y += vel.current.x;
-  outer.current.rotation.x += vel.current.y;
-  vel.current.x *= INERTIA;
-  vel.current.y *= INERTIA;
-  if (Math.abs(vel.current.x) > 1e-4 || Math.abs(vel.current.y) > 1e-4)
-    need = true;
+    outer.current.rotation.y += vel.current.x;
+    outer.current.rotation.x += vel.current.y;
+    vel.current.x *= INERTIA;
+    vel.current.y *= INERTIA;
+    if (Math.abs(vel.current.x) > 1e-4 || Math.abs(vel.current.y) > 1e-4)
+      need = true;
 
-  if (
-    Math.abs(cPar.current.x - tPar.current.x) > 1e-4 ||
-    Math.abs(cPar.current.y - tPar.current.y) > 1e-4 ||
-    Math.abs(cHov.current.x - tHov.current.x) > 1e-4 ||
-    Math.abs(cHov.current.y - tHov.current.y) > 1e-4
-  )
-    need = true;
-
-  if (need) invalidate();
-});
+    if (need) invalidate();
+  });
 
   if (!content) return null;
   return (
     <group ref={outer}>
       <group ref={inner}>
-        <primitive object={content} />
+        <primitive 
+          object={content} 
+          dispose={null}
+          onUpdate={(self) => {
+            self.traverse((child) => {
+              if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+                if (child.material) {
+                  child.material.needsUpdate = true;
+                }
+              }
+            });
+          }}
+        />
       </group>
     </group>
   );
@@ -398,30 +413,30 @@ useFrame((_, dt) => {
 
 const ModelViewer = ({
   url,
-  width = 400,
-  height = 400,
+  width = 600,
+  height = 600,
   modelXOffset = 0,
   modelYOffset = 0,
-  defaultRotationX = -50,
-  defaultRotationY = 20,
-  defaultZoom = 0.5,
+  defaultRotationX = -30,
+  defaultRotationY = 30,
+  defaultZoom = 1.5,
   minZoomDistance = 0.5,
   maxZoomDistance = 10,
   enableMouseParallax = true,
   enableManualRotation = true,
   enableHoverRotation = true,
   enableManualZoom = true,
-  ambientIntensity = 0.3,
-  keyLightIntensity = 1,
-  fillLightIntensity = 0.5,
-  rimLightIntensity = 0.8,
-  environmentPreset = 'forest',
-  autoFrame = false,
+  ambientIntensity = 0.5,
+  keyLightIntensity = 1.5,
+  fillLightIntensity = 0.8,
+  rimLightIntensity = 1.2,
+  environmentPreset = 'studio',
+  autoFrame = true,
   placeholderSrc,
   showScreenshotButton = true,
-  fadeIn = false,
-  autoRotate = false,
-  autoRotateSpeed = 0.35,
+  fadeIn = true,
+  autoRotate = true,
+  autoRotateSpeed = 0.5,
   onModelLoaded,
 }) => {
   useEffect(() => void useGLTF.preload(url), [url]);
@@ -485,6 +500,8 @@ const ModelViewer = ({
             cursor: 'pointer',
             padding: '8px 16px',
             borderRadius: 10,
+            background: 'rgba(0,0,0,0.5)',
+            color: 'white',
           }}
         >
           Take Screenshot
@@ -494,7 +511,11 @@ const ModelViewer = ({
       <Canvas
         shadows
         frameloop="demand"
-        gl={{ preserveDrawingBuffer: true }}
+        gl={{ 
+          preserveDrawingBuffer: true,
+          antialias: true,
+          powerPreference: "high-performance" 
+        }}
         onCreated={({ gl, scene, camera }) => {
           rendererRef.current = gl;
           sceneRef.current = scene;
@@ -502,31 +523,49 @@ const ModelViewer = ({
           gl.toneMapping = THREE.ACESFilmicToneMapping;
           gl.outputColorSpace = THREE.SRGBColorSpace;
         }}
-        camera={{ fov: 50, position: [0, 0, camZ], near: 0.01, far: 100 }}
-        style={{ touchAction: 'pan-y pinch-zoom' }}
+        camera={{ fov: 45, position: [0, 0, camZ], near: 0.1, far: 1000 }}
+        style={{ touchAction: 'pan-y pinch-zoom', background: 'transparent' }}
       >
         {environmentPreset !== 'none' && (
-          <Environment preset={environmentPreset} background={false} />
+          <Environment 
+            preset={environmentPreset} 
+            background={false}
+            blur={0.5}
+          />
         )}
 
-        <ambientLight intensity={ambientIntensity} />
+        <ambientLight intensity={ambientIntensity} color="#ffffff" />
         <directionalLight
-          position={[5, 5, 5]}
+          position={[10, 10, 5]}
           intensity={keyLightIntensity}
+          color="#ffffff"
           castShadow
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          shadow-camera-near={0.5}
+          shadow-camera-far={500}
         />
         <directionalLight
-          position={[-5, 2, 5]}
+          position={[-5, 5, 5]}
           intensity={fillLightIntensity}
+          color="#aaaaaa"
         />
-        <directionalLight position={[0, 4, -5]} intensity={rimLightIntensity} />
+        <directionalLight 
+          position={[0, 5, -10]} 
+          intensity={rimLightIntensity} 
+          color="#ffffff" 
+        />
+        <pointLight position={[0, 10, 0]} intensity={0.5} />
 
         <ContactShadows
           ref={contactRef}
           position={[0, -0.5, 0]}
-          opacity={0.35}
-          scale={10}
-          blur={2}
+          opacity={0.5}
+          scale={20}
+          blur={2.5}
+          far={10}
+          resolution={1024}
+          color="#000000"
         />
 
         <Suspense fallback={<Loader placeholderSrc={placeholderSrc} />}>
@@ -547,7 +586,10 @@ const ModelViewer = ({
             fadeIn={fadeIn}
             autoRotate={autoRotate}
             autoRotateSpeed={autoRotateSpeed}
-            onLoaded={onModelLoaded}
+            onLoaded={() => {
+              onModelLoaded?.();
+              invalidate();
+            }}
           />
         </Suspense>
 
@@ -761,7 +803,7 @@ const WebImpactPage = () => {
             </div>
           </div>
 
-          {/* Modelo 3D */}
+          {/* Modelo 3D Mejorado */}
           <div className="h-[600px] bg-gray-900/30 backdrop-blur-xl rounded-3xl border border-gray-700 relative overflow-hidden">
             {showModel && (
               <div className="h-full p-8">
@@ -773,21 +815,23 @@ const WebImpactPage = () => {
                     width="100%"
                     height="100%"
                     modelXOffset={0}
-                    modelYOffset={0}
-                    defaultRotationX={-50}
-                    defaultRotationY={20}
-                    defaultZoom={0.5}
-                    minZoomDistance={0.5}
-                    maxZoomDistance={10}
-                    enableMouseParallax={true}
-                    enableManualRotation={true}
-                    enableHoverRotation={true}
-                    enableManualZoom={true}
-                    autoFrame={false}
+                    modelYOffset={0.2}
+                    defaultRotationX={-30}
+                    defaultRotationY={30}
+                    defaultZoom={1.2}
+                    minZoomDistance={0.8}
+                    maxZoomDistance={8}
+                    ambientIntensity={0.6}
+                    keyLightIntensity={1.8}
+                    fillLightIntensity={1.0}
+                    rimLightIntensity={1.5}
+                    environmentPreset="studio"
+                    autoFrame={true}
+                    fadeIn={true}
                     autoRotate={true}
-                    autoRotateSpeed={0.35}
-                    environmentPreset="forest"
+                    autoRotateSpeed={0.4}
                     showScreenshotButton={false}
+                    onModelLoaded={() => console.log('Modelo 3D cargado')}
                   />
                 )}
               </div>
