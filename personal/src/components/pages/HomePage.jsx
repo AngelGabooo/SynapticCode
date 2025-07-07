@@ -5,7 +5,6 @@ import HeroSection from '../organisms/HeroSection';
 import PartnersSection from '../organisms/PartnersSection';
 import PortfolioShowcase from '../organisms/PortfolioShowcase';
 import ProjectLifeSection from '../molecules/ProjectLifeSection';
-import WebflowProcess from '../organisms/WebflowProcess';
 import SplashCursor from '../atoms/SplashCursor';
 import Aurora from '../organisms/Aurora'; // Asegúrate de tener este componente
 import TestimonialsSection from '../organisms/TestimonialsSection'; // Nuevo componente
@@ -43,7 +42,6 @@ const HomePage = () => {
           <PartnersSection />
           <PortfolioShowcase />
           <ProjectLifeSection />
-          <WebflowProcess />
           <TestimonialsSection /> {/* Nuevo componente de testimonios */}
           <ProfessionalProfile /> {/* Perfil profesional */}
           {/* Aquí puedes agregar más secciones según sea necesario */}

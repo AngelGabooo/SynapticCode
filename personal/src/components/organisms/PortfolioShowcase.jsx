@@ -1,116 +1,150 @@
-import { motion, useAnimation } from 'framer-motion';
-import { useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
 
 const PortfolioSections = () => {
   // Primera sección - Proyectos destacados (se mueve a la derecha)
   const featuredProjects = [
     {
-      title: "Unlock Your Customer Data",
-      category: "PERSONAL",
-      description: "Plataforma de análisis de datos para e-commerce",
-      imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+      title: "Hoteles",
+      category: "Hoteles",
+      description: "Plataforma hotelera con reservas online",
+      imageUrl: "https://images.squarespace-cdn.com/content/62bdac5c8fddd221bfbace8e/37f4acd7-a628-4e27-baa8-3f6857ef1ff3/image-asset.jpeg?content-type=image%2Fjpeg&format=1500w"
     },
     {
-      title: "A joyful learner is an Engaged learner",
-      category: "POLICY",
-      description: "Sistema de gamificación para educación online",
-      imageUrl: "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1471&q=80"
+      title: "Restaurantes",
+      category: "Comida",
+      description: "Plataforma de reservas y pedidos online",
+      imageUrl: "https://cdn.prod.website-files.com/5e593fb060cf877cf875dd1f/67108c96215b682a860be345_183a9b4c-f57f-403c-b364-d9b26f1f6a9b-1-(23).webp"
     },
     {
-      title: "Out of this world Solutions",
-      category: "PILDER",
-      description: "Dashboard de gestión para startups espaciales",
-      imageUrl: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1472&q=80"
+      title: "Salones de Belleza",
+      category: "Belleza",
+      description: "Plataforma de reservas y gestión de citas",
+      imageUrl: "https://cdn.prod.website-files.com/5e593fb060cf877cf875dd1f/6706cd32352bd54b0587ed0d_183a9b4c-f57f-403c-b364-d9b26f1f6a9b-1-(25).webp"
     },
     {
-      title: "Legal Weed Delivered Fast",
-      category: "EFFECTIVE",
-      description: "Plataforma de e-commerce para cannabis medicinal",
-      imageUrl: "https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+      title: "Medicos",
+      category: "Salud",
+      description: "Plataforma de gestión de citas médicas",
+      imageUrl: "https://cdn.prod.website-files.com/5e593fb060cf877cf875dd1f/67108ca1bf381ac9e0b4629f_Cat.14.webp"
     },
     {
-      title: "IT'S NOT A TENT, IT'S A CULLA",
-      category: "GREATNESS",
-      description: "Sitio web para equipo outdoor premium",
-      imageUrl: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+      title: "Agencias",
+      category: "Agencies",
+      description: "Plataforma para portafolios y agencias",
+      imageUrl: "https://cdn.prod.website-files.com/5e593fb060cf877cf875dd1f/6706cd8b5abd261a7f0827d6_183a9b4c-f57f-403c-b364-d9b26f1f6a9b-1-(35).webp"
     },
     {
-      title: "Weed Griffiths",
-      category: "SPECIAL",
-      description: "Plataforma de entrega express",
-      imageUrl: "https://images.unsplash.com/photo-1605000797499-95a51c5269ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=1471&q=80"
+      title: "Agencias",
+      category: "Agencies",
+      description: "Plataforma de gestión de proyectos de agencias",
+      imageUrl: "https://cdn.prod.website-files.com/5e593fb060cf877cf875dd1f/6706cd43352bd54b05880da9_183a9b4c-f57f-403c-b364-d9b26f1f6a9b-1-(37).png"
     }
   ];
 
   // Segunda sección - Trabajo reciente (se mueve a la izquierda)
   const recentProjects = [
     {
-      title: "FITTER AND HEALTHIER IN ONE MONTH WITH",
-      category: "CAREER",
-      description: "App de fitness y nutrición personalizada",
-      imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+      title: "Agencia de Marketing",
+      category: "Agencias & Marketing",
+      description: "Plataforma de marketing digital",
+      imageUrl: "https://cdn.prod.website-files.com/5e593fb060cf877cf875dd1f/68102a39dc8f858806d01216_1745637115499_20055518_Secondary-20prev.webp"
     },
     {
-      title: "Way That",
-      category: "INNOVATION",
-      description: "Solución de movilidad urbana",
-      imageUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+      title: "Bienes y Raíces",
+      category: "Real Estate",
+      description: "Plataforma de gestión inmobiliaria",
+      imageUrl: "https://cdn.prod.website-files.com/5e593fb060cf877cf875dd1f/6706cd46c5f83dd2187bfde7_183a9b4c-f57f-403c-b364-d9b26f1f6a9b-1-(33).webp"
     },
     {
-      title: "Roy, Salt, Win Luxury",
-      category: "COLLECTIONS",
-      description: "E-commerce de artículos de lujo",
-      imageUrl: "https://images.unsplash.com/photo-1601924638867-346803f9143c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+      title: "Arquitectura y Diseños",
+      category: "ARCHITECTURE",
+      description: "Plataforma de portafolio arquitectónico",
+      imageUrl: "https://cdn.prod.website-files.com/5e593fb060cf877cf875dd1f/6706cd38713733aafac171bc_183a9b4c-f57f-403c-b364-d9b26f1f6a9b-1-(16).webp"
     },
     {
-      title: "Experiences Redefined",
-      category: "TRAVEL",
-      description: "Plataforma de viajes exclusivos",
-      imageUrl: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+      title: "Plataforma de Gobierno",
+      category: "GOVERNMENT",
+      description: "Sistema de gestión gubernamental",
+      imageUrl: "https://cdn.prod.website-files.com/5e593fb060cf877cf875dd1f/6706cd735abd261a7f080750_183a9b4c-f57f-403c-b364-d9b26f1f6a9b-1-(24).png"
     },
     {
-      title: "Secure Transactions",
-      category: "FINANCE",
-      description: "Sistema de pagos seguros",
-      imageUrl: "https://images.unsplash.com/photo-1553729459-efe14ef6055d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+      title: "Mantinimiento de Hogar",
+      category: "HOME MAINTENANCE",
+      description: "Plataforma de servicios de mantenimiento",
+      imageUrl: "https://cdn.prod.website-files.com/5e593fb060cf877cf875dd1f/6706cd8e51b1e0160144a5bb_183a9b4c-f57f-403c-b364-d9b26f1f6a9b-1-(27).webp"
     },
     {
-      title: "Transparent Data",
-      category: "TECH",
-      description: "Visualización de datos en tiempo real",
-      imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+      title: "Technología y IoT",
+      category: "TECHNOLOGY & IOT",
+      description: "Tecnologia, software y dispositivos IoT",
+      imageUrl: "https://cdn.prod.website-files.com/5e593fb060cf877cf875dd1f/6711342ea3d7f258ad5e7959_183a9b4c-f57f-403c-b364-d9b26f1f6a9b-1-(34).webp"
     }
   ];
 
-  const AutoScrollCarousel = ({ items, direction = 'right', speed = 0.5 }) => {
-    const carouselRef = useRef();
-    const animationControls = useAnimation();
-    const itemWidth = window.innerWidth > 768 ? 500 : 350;
+  const AutoScrollCarousel = ({ items, direction = 'right', speed = 1 }) => {
+    const containerRef = useRef(null);
+    const [translateX, setTranslateX] = useState(0);
+    const [itemWidth, setItemWidth] = useState(350);
     const gap = 40;
 
+    // Calcular el ancho del item basado en el tamaño de la pantalla
     useEffect(() => {
-      const totalWidth = items.length * (itemWidth + gap);
-      const duration = totalWidth / (speed * 50);
+      const updateItemWidth = () => {
+        setItemWidth(window.innerWidth > 768 ? 500 : 350);
+      };
+      
+      updateItemWidth();
+      window.addEventListener('resize', updateItemWidth);
+      
+      return () => window.removeEventListener('resize', updateItemWidth);
+    }, []);
 
-      animationControls.start({
-        x: direction === 'right' ? -totalWidth/2 : totalWidth/2,
-        transition: {
-          duration: duration,
-          ease: "linear",
-          repeat: Infinity,
-          repeatType: "loop"
+    useEffect(() => {
+      const totalItemWidth = itemWidth + gap;
+      const totalWidth = items.length * totalItemWidth;
+      
+      let animationId;
+      
+      const animate = () => {
+        setTranslateX(prev => {
+          const newValue = direction === 'right' ? prev - speed : prev + speed;
+          
+          // Reinicio suave cuando completa un ciclo
+          if (direction === 'right' && Math.abs(newValue) >= totalWidth) {
+            return 0;
+          }
+          if (direction === 'left' && newValue >= 0) {
+            return -totalWidth;
+          }
+          
+          return newValue;
+        });
+        
+        animationId = requestAnimationFrame(animate);
+      };
+      
+      animationId = requestAnimationFrame(animate);
+      
+      return () => {
+        if (animationId) {
+          cancelAnimationFrame(animationId);
         }
-      });
-    }, [items, direction, speed, itemWidth]);
+      };
+    }, [items.length, direction, speed, itemWidth]);
 
     return (
       <div className="overflow-hidden py-8 w-screen relative left-1/2 right-1/2 -mx-[50vw]">
-        <motion.div 
-          ref={carouselRef}
-          className="flex gap-10 px-[5vw]"
-          animate={animationControls}
+        <div 
+          ref={containerRef}
+          className="flex gap-10 px-[5vw] transition-transform duration-0"
+          style={{
+            transform: `translateX(${translateX}px)`,
+            width: 'fit-content'
+          }}
         >
-          {[...items, ...items].map((project, index) => (
+          {/* Renderizar los items duplicados para efecto infinito */}
+          {[...items, ...items, ...items].map((project, index) => (
             <ProjectCard 
               key={`${project.title}-${index}`} 
               project={project} 
@@ -118,26 +152,26 @@ const PortfolioSections = () => {
               width={itemWidth}
             />
           ))}
-        </motion.div>
+        </div>
       </div>
     );
   };
 
   const ProjectCard = ({ project, index, width = 350 }) => {
     return (
-      <motion.div
-        className="flex-shrink-0 relative overflow-hidden rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300"
+      <div
+        className="flex-shrink-0 relative overflow-hidden rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300 group"
         style={{ 
           width: `${width}px`,
           height: `${width * 0.75}px`
         }}
-        whileHover={{ scale: 1.03 }}
       >
         <div className="w-full h-full overflow-hidden">
           <img
             src={project.imageUrl}
             alt={project.title}
-            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            style={{ transformOrigin: 'center' }}
           />
         </div>
         
@@ -152,7 +186,7 @@ const PortfolioSections = () => {
             {project.description}
           </p>
         </div>
-      </motion.div>
+      </div>
     );
   };
 
@@ -184,7 +218,7 @@ const PortfolioSections = () => {
           <AutoScrollCarousel 
             items={featuredProjects} 
             direction="right" 
-            speed={0.3}
+            speed={1.5}
           />
         </div>
       </section>
@@ -215,7 +249,7 @@ const PortfolioSections = () => {
           <AutoScrollCarousel 
             items={recentProjects} 
             direction="left" 
-            speed={0.3}
+            speed={1.5}
           />
           
           <motion.div

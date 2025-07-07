@@ -16,8 +16,8 @@ const Header = ({ activeIndex, setActiveIndex }) => {
   
   const navItems = [
     { name: 'Work', path: '/#work' },
-    { name: 'Capabilities', path: '/#capabilities' },
-    { name: 'Process', path: '/#process' }
+    { name: 'Capabilities', path: '/maintenance' },
+    { name: 'Process', path: '/maintenance' }
   ];
 
   useEffect(() => {
@@ -62,7 +62,9 @@ const Header = ({ activeIndex, setActiveIndex }) => {
   }, []);
 
   const handleNavigation = (path, index) => {
-    if (path.startsWith('/#')) {
+    if (path === '/maintenance') {
+      navigate('/maintenance');
+    } else if (path.startsWith('/#')) {
       // Manejar anclas en la página de inicio
       if (window.location.pathname !== '/') {
         navigate('/');
@@ -170,6 +172,9 @@ const Header = ({ activeIndex, setActiveIndex }) => {
                   whileHover={{ scale: 1.05 }}
                 >
                   {item.name}
+                  {item.path === '/maintenance' && (
+                    <span className="absolute -top-1 -right-2 w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
+                  )}
                   <motion.span 
                     className="absolute bottom-0 left-0 w-full h-px bg-white"
                     initial={{ scaleX: activeIndex === index ? 1 : 0 }}
@@ -228,6 +233,9 @@ const Header = ({ activeIndex, setActiveIndex }) => {
                 transition={{ delay: index * 0.1 }}
               >
                 {item.name}
+                {item.path === '/maintenance' && (
+                  <span className="ml-2 w-2 h-2 rounded-full bg-yellow-400 animate-pulse inline-block"></span>
+                )}
               </motion.button>
             ))}
             

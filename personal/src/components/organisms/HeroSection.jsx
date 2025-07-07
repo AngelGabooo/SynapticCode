@@ -6,10 +6,10 @@ import { TbBrandThreejs, TbApi } from 'react-icons/tb';
 
 const translations = {
   es: {
-    title: "Experto en desarrollo Webflow",
-    subtitle: "Creo sitios Webflow perfectos sin necesidad de un equipo interno.",
+    title: "Experto en desarrollo de Paginas Web",
+    subtitle: "Creo sitios Web perfectos sin necesidad de un equipo interno.",
     workButton: "Trabaja conmigo →",
-    premiumButton: "Socio Premium",
+    premiumButton: "Contacto",
     technologies: "Tecnologías que uso:",
     projects: "548 proyectos exitosos.",
     cases: "Ver casos →",

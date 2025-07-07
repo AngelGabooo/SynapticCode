@@ -98,42 +98,46 @@ const TestimonialsSection = () => {
     {
       id: 1,
       rating: 5,
-      content: "Lisson provides great design and has a great sense of user experience and aesthetics. He delivers on time and is an overall great communicator. I highly recommend working with him.",
-      author: "Mara Nikolic",
-      position: "Founder",
-      company: "Mara99",
-      username: "heymara",
-      gradient: "from-purple-500 to-pink-500"
+      content: "Trabajar con Angel fue una experiencia excepcional. Su atención al detalle y comprensión de nuestras necesidades superó todas las expectativas. El diseño final fue exactamente lo que buscábamos.",
+      author: "Carlos Mendoza",
+      position: "Director de Marketing",
+      company: "TechSolutions",
+      username: "carlos_m",
+      gradient: "from-purple-500 to-pink-500",
+      avatar: "👨‍💼" // Icono de persona
     },
     {
       id: 2,
       rating: 5,
-      content: "He will exceed your expectations. Super easy to work with Lisson, incredibly intelligent, and perceptive. He took the fumbled thoughts from my head and turned it all into a beautiful creation.",
-      author: "Danaisa Urgelles",
-      position: "Medical Doctor",
-      company: "BHfield",
-      username: "úbhfield",
-      gradient: "from-blue-500 to-cyan-500"
+      content: "Increíble profesionalismo y creatividad. SynapticCode transformó completamente nuestra imagen corporativa en tiempo récord. Su capacidad para captar nuestra esencia y plasmarla en el diseño es asombrosa.",
+      author: "Ana López",
+      position: "CEO",
+      company: "Diseño360",
+      username: "analopez",
+      gradient: "from-blue-500 to-cyan-500",
+      avatar: "👩‍💻" // Icono de persona
     },
     {
       id: 3,
       rating: 5,
-      content: "Amazing designer with an eye for aesthetics. I had pretty vigorous requests and he hit every single one. He was patient and highly skilled!",
-      author: "John D Saunders",
-      position: "Co-founder",
-      company: "5fourdigital",
-      username: "5four",
-      gradient: "from-green-500 to-teal-500"
+      content: "Como startup, necesitábamos un diseño impactante con recursos limitados. SynapticCode no solo entendió nuestra visión, sino que la mejoró. Su trabajo fue clave para nuestra exitosa campaña de lanzamiento.",
+      author: "Diego Ramírez",
+      position: "Co-fundador",
+      company: "StartUpNow",
+      username: "diego_r",
+      gradient: "from-green-500 to-teal-500",
+      avatar: "🧑‍💼" // Icono de persona
     },
     {
       id: 4,
       rating: 5,
-      content: "Working with Lisson is always smooth and full of empathy. The project is very high quality, and has been done in a tight schedule. I recommend working with Lisson.",
-      author: "Vincent Arrouet",
-      position: "Co-founder",
-      company: "Sunology",
-      username: "Sunology",
-      gradient: "from-orange-500 to-red-500"
+      content: "Recomiendo a SynapticCode sin dudarlo. Su enfoque metódico y su ojo para el diseño moderno nos ayudaron a destacar en un mercado competitivo. Además, cumplió con todos los plazos prometidos.",
+      author: "María González",
+      position: "Directora Creativa",
+      company: "BrandVision",
+      username: "mariag",
+      gradient: "from-orange-500 to-red-500",
+      avatar: "👩‍🎨" // Icono de persona
     }
   ];
 
@@ -167,10 +171,10 @@ const TestimonialsSection = () => {
         >
           <div className="inline-block">
             <h2 className="text-5xl md:text-7xl font-black text-white mb-4 tracking-tight">
-              What they say
+              Lo que dicen
             </h2>
             <h3 className="text-3xl md:text-5xl font-light text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600">
-              about me
+              sobre mi trabajo
             </h3>
           </div>
           <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 to-purple-600 mx-auto mt-8 rounded-full"></div>
@@ -229,10 +233,8 @@ const TestimonialsSection = () => {
                 <div className="mt-8 flex items-center gap-4 relative z-10">
                   {/* Avatar con gradiente */}
                   <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${testimonial.gradient} p-0.5`}>
-                    <div className="w-full h-full bg-black rounded-2xl flex items-center justify-center">
-                      <span className="text-white font-bold text-lg">
-                        {testimonial.author.split(' ').map(n => n[0]).join('')}
-                      </span>
+                    <div className="w-full h-full bg-black rounded-2xl flex items-center justify-center text-2xl">
+                      {testimonial.avatar}
                     </div>
                   </div>
 
@@ -245,7 +247,7 @@ const TestimonialsSection = () => {
                   {/* Logo/Username */}
                   <div className="text-right">
                     <div className={`text-transparent bg-clip-text bg-gradient-to-r ${testimonial.gradient} font-bold text-lg`}>
-                      {testimonial.username}
+                      @{testimonial.username}
                     </div>
                   </div>
                 </div>
@@ -275,19 +277,19 @@ const TestimonialsSection = () => {
               <div className="text-3xl font-bold text-white mb-2">
                 {counters.rating}
               </div>
-              <div className="text-sm">Average Rating</div>
+              <div className="text-sm">Puntuación promedio</div>
             </div>
             <div className="transform transition-all duration-500 hover:scale-105">
               <div className="text-3xl font-bold text-white mb-2">
                 {counters.clients}+
               </div>
-              <div className="text-sm">Happy Clients</div>
+              <div className="text-sm">Clientes satisfechos</div>
             </div>
             <div className="transform transition-all duration-500 hover:scale-105">
               <div className="text-3xl font-bold text-white mb-2">
                 {counters.projects}+
               </div>
-              <div className="text-sm">Projects Done</div>
+              <div className="text-sm">Proyectos completados</div>
             </div>
           </div>
         </div>
